@@ -20,6 +20,18 @@ The Loan Broker application with AWS Step Functions, DynamoDB, Lambda, SQS, and 
 
 Users can deploy this application on LocalStack and AWS with no changes using Cloud Development Kit (CDK). To test this application sample, we will demonstrate how you use LocalStack to deploy the infrastructure on your developer machine and your CI environment. Furthermore, we will showcase how you can use Cloud Pods Launchpad to inject a Cloud Pod into your running LocalStack container to test the application without creating your infrastructure again!
 
+## Architecture diagram
+
+The following diagram shows the architecture that this sample application builds and deploys:
+
+![Architecture diagram for Loan Broker application with AWS Step Functions, DynamoDB, Lambda, SQS, and SNS](./images/architecture-diagram.png)
+
+- [Step Functions](https://docs.localstack.cloud/user-guide/aws/stepfunctions/) to controls the sequence of activities and transfer data between components for the Loan Broker.
+- [Lambda](https://docs.localstack.cloud/user-guide/aws/lambda/) functions to implement the business logic for the Loan Broker, Banks and Aggregator in the application.
+- [SNS](https://docs.localstack.cloud/user-guide/aws/sns/) to publish messages and broadcasts loan quote requests to any subscribing banks.
+- [SQS](https://docs.localstack.cloud/user-guide/aws/sqs/) to ferry loan quotes from the banks to the Aggregator.
+- [DynamoDB](https://docs.localstack.cloud/user-guide/aws/dynamodb/) as a key-value and document database to persist the Aggregator's state.
+
 ## Prerequisites
 
 - LocalStack Pro with the [`localstack` CLI](https://docs.localstack.cloud/getting-started/installation/#localstack-cli).
