@@ -88,7 +88,7 @@ awslocal dynamodb put-item \
     --item='{ "Type": { "S": "Home" }, "BankAddress": {"L": [ { "S": "BankRecipientPremium" }, { "S": "BankRecipientUniversal" }, { "S": "BankRecipientPawnshop" } ] } }'
 ```
 
-We can start the State Machine execution to get quotes from the banks after submittin a loan application. Run the following command:
+We can start the State Machine execution to get quotes from the banks after submitting a loan application. Run the following command:
 
 ```sh
 awslocal stepfunctions start-execution \
