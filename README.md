@@ -11,7 +11,7 @@
 
 ## Introduction
 
-The Loan Broker application with AWS Step Functions, DynamoDB, Lambda, SQS, and SNS demonstrates Gregor Hohpe's [Loan Broker example](https://www.enterpriseintegrationpatterns.com/ramblings/loanbroker_stepfunctions.html). The sample application implements a [Recipient List](https://www.enterpriseintegrationpatterns.com/patterns/messaging/RecipientList.html) pattern and a [Scatter Gather](https://www.enterpriseintegrationpatterns.com/patterns/messaging/RecipientList.html) pattern to retrieve a list of banks and dynamically route loan application to multiple banks respectively. The sample application implements the following integration among the various AWS services:
+The Loan Broker application with AWS Step Functions, DynamoDB, Lambda, SQS, and SNS demonstrates Gregor Hohpe's [Loan Broker example](https://www.enterpriseintegrationpatterns.com/ramblings/loanbroker_stepfunctions.html). The sample application implements a [Recipient List](https://www.enterpriseintegrationpatterns.com/patterns/messaging/RecipientList.html) pattern and a [Scatter Gather](https://www.enterpriseintegrationpatterns.com/patterns/messaging/BroadcastAggregate.html) pattern to retrieve a list of banks and dynamically route loan application to multiple banks respectively. The sample application implements the following integration among the various AWS services:
 
 - User submits a loan application with personal data, desired terms, loan amount, and duration.
 - Loan Broker fetches information from Credit Bureau and adds it to the loan application submitted earlier.
@@ -25,6 +25,7 @@ Users can deploy this application on LocalStack and AWS with no changes using Cl
 - LocalStack Pro with the [`localstack` CLI](https://docs.localstack.cloud/getting-started/installation/#localstack-cli).
 - [Cloud Development Kit](https://docs.localstack.cloud/user-guide/integrations/aws-cdk/) with the [`cdklocal`](https://www.npmjs.com/package/aws-cdk-local) installed.
 - [AWS CLI](https://docs.localstack.cloud/user-guide/integrations/aws-cli/) with the [`awslocal` wrapper](https://docs.localstack.cloud/user-guide/integrations/aws-cli/#localstack-aws-cli-awslocal).
+- [Node.js](https://nodejs.org/en/download), and [`yarn`](https://yarnpkg.com/).
 
 Start LocalStack Pro with the `LOCALSTACK_API_KEY` pre-configured:
 
@@ -37,7 +38,7 @@ We specified DEBUG=1 to get the printed LocalStack logs directly in the terminal
 
 ## Instructions
 
-You can build and deploy the sample application on LocalStack by running our `Makefile` commands. To deploy the infrastructure, you can run `make deploy` and `make run` after installing the application dependencies. Here are instructions to deploy and test it manually step-by-step.
+You can build and deploy the sample application on LocalStack by running our `Makefile` commands. To deploy the infrastructure, you can run `make deploy` after installing the application dependencies, and run the test steps manually. Here are instructions to deploy and test it manually step-by-step.
 
 ### Deploying the application
 
@@ -75,7 +76,7 @@ awslocal dynamodb put-item \
     --item='{ "Type": { "S": "Home" }, "BankAddress": {"L": [ { "S": "BankRecipientPremium" }, { "S": "BankRecipientUniversal" }, { "S": "BankRecipientPawnshop" } ] } }'
 ```
 
-Start the State Machine execution by running the following command:
+We can start the State Machine execution to get quotes from the banks after submittin a loan application. Run the following command:
 
 ```sh
 awslocal stepfunctions start-execution \
