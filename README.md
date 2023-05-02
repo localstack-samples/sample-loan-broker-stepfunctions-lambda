@@ -39,10 +39,9 @@ The following diagram shows the architecture that this sample application builds
 - [AWS CLI](https://docs.localstack.cloud/user-guide/integrations/aws-cli/) with the [`awslocal` wrapper](https://docs.localstack.cloud/user-guide/integrations/aws-cli/#localstack-aws-cli-awslocal).
 - [Node.js](https://nodejs.org/en/download), and [`yarn`](https://yarnpkg.com/).
 
-Start LocalStack Pro with the `LOCALSTACK_API_KEY` pre-configured:
+Start LocalStack Community edition:
 
 ```shell
-export LOCALSTACK_API_KEY=<your-api-key>
 DEBUG=1 localstack start
 ```
 
