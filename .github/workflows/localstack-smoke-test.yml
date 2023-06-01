@@ -1,18 +1,16 @@
-name: Deploy on LocalStack 
+# This is a private workflow to send automatic Slack notifications
+# in case a test fails.
+
+name: LocalStack Smoke Test
 
 on:
-  push:
-    paths-ignore:
-      - 'README.md'
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  schedule:
+    # “At 00:00 on day-of-month 1.”
+    - cron: "0 0 1 * *"
 
 jobs:
   cdk:
-    name: Setup infrastructure using CDK
+    name: CDK Smoke Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -56,4 +54,17 @@ jobs:
           awslocal lambda list-functions
           awslocal sqs list-queues 
           awslocal dynamodb list-tables
-          awslocal stepfunctions list-state-machines 
+          awslocal stepfunctions list-state-machines
+
+      - name: Send a Slack notification
+        if: failure()
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          notification_title: "{workflow} has {status_message}"
+          message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
+          footer: "Linked Repo <{repo_url}|{repo}> | <{workflow_url}|View Workflow>"
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
