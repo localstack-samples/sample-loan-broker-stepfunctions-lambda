@@ -7,6 +7,9 @@ on:
   schedule:
     # “At 00:00 on day-of-month 1.”
     - cron: "0 0 1 * *"
+  pull_request:
+    branches:
+      - main
 
 jobs:
   cdk:
@@ -52,6 +55,21 @@ jobs:
       - name: List the resources
         run: |
           awslocal lambda list-functions
+          awslocal sqs list-queues 
+          awslocal dynamodb list-tables
+          awslocal stepfunctions list-state-machines
+
+      - name: Restart LocalStack
+        run: |
+          localstack stop
+          localstack start -d
+          localstack wait -t 15
+
+      - name: Inject Cloud Pod
+        run: |
+          localstack pod load file://$(pwd)/cloud-pod/loan-broker-application
+          sleep 15
+          localstack lambda list-functions 
           awslocal sqs list-queues 
           awslocal dynamodb list-tables
           awslocal stepfunctions list-state-machines
