@@ -1,15 +1,12 @@
 # This is a private workflow to send automatic Slack notifications
-# in case a test fails.
+# in case a test fails. Avoid using this snippet in your own workflows.
 
 name: LocalStack Smoke Test
 
 on:
   schedule:
-    # “At 00:00 on day-of-month 1.”
-    - cron: "0 0 1 * *"
-  pull_request:
-    branches:
-      - main
+    # “At 00:00 on Sunday.”
+    - cron: "0 0 * * 0"
 
 jobs:
   cdk:
@@ -69,7 +66,7 @@ jobs:
         run: |
           localstack pod load file://$(pwd)/cloud-pod/loan-broker-application
           sleep 15
-          localstack lambda list-functions 
+          awslocal lambda list-functions 
           awslocal sqs list-queues 
           awslocal dynamodb list-tables
           awslocal stepfunctions list-state-machines
