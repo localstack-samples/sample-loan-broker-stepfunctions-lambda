@@ -1,66 +1,31 @@
-# This is a private workflow to send automatic Slack notifications
-# in case a test fails. Avoid using this snippet in your own workflows.
-
-name: LocalStack Smoke Test
+name: LocalStack Cloud Pods Test
 
 on:
   schedule:
     # “At 00:00 on Sunday.”
     - cron: "0 0 * * 0"
+  workflow_dispatch:
 
 jobs:
-  cdk:
-    name: CDK Smoke Test
+  cloud-pods:
+    name: Cloud Pods Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install CDK
-        run: |
-          npm install -g aws-cdk-local aws-cdk
-          cdklocal --version
-
-      - name: Install dependencies
-        run: |
-          yarn
 
       - name: Start LocalStack
         env:
           DNS_ADDRESS: 0
         run: |
           pip install localstack awscli-local[ver1]
-          pip install terraform-local
           docker pull localstack/localstack:latest
           # Start LocalStack in the background
-          localstack start -d
+          LS_LOG=trace localstack start -d
           # Wait 30 seconds for the LocalStack container to become ready before timing out
           echo "Waiting for LocalStack startup..."
           localstack wait -t 15
           echo "Startup complete"
-
-      - name: Deploy using CDK
-        run: |
-          cdklocal bootstrap aws://000000000000/us-east-1
-          cdklocal deploy --all --require-approval never
-
-      - name: List the resources
-        run: |
-          awslocal lambda list-functions
-          awslocal sqs list-queues 
-          awslocal dynamodb list-tables
-          awslocal stepfunctions list-state-machines
-
-      - name: Restart LocalStack
-        run: |
-          localstack stop
-          localstack start -d
-          localstack wait -t 15
 
       - name: Inject Cloud Pod
         run: |
@@ -79,7 +44,19 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           notification_title: "{workflow} has {status_message}"
           message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
-          footer: "Linked Repo <{repo_url}|{repo}> | <{workflow_url}|View Workflow>"
+          footer: "Linked Repo <{repo_url}|{repo}> | <{run_url}|View Workflow run>"
           notify_when: "failure"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Generate a Diagnostic Report
+        if: failure()
+        run: |
+          curl -s localhost:4566/_localstack/diagnose | gzip -cf > diagnose.json.gz
+
+      - name: Upload the Diagnostic Report
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: diagnose.json.gz
+          path: ./diagnose.json.gz
