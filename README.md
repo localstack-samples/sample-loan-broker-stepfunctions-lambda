@@ -175,3 +175,8 @@ localstack pod load file://$(pwd)/cloud-pod/loan-broker-application
 Alternatively, you can use [Cloud Pods Launchpad](https://docs.localstack.cloud/user-guide/tools/cloud-pods/launchpad/) to quickly inject Cloud Pods into your running LocalStack container. Click on the [badge] to launch Cloud Pods Launchpad and inject the Cloud Pod for this application by clicking the `Inject` button.
 
 You can use the [LocalStack Web Application](https://app.localstack.cloud) to view the [Step Functions Resource Browser](https://app.localstack.cloud/resources/stepfunctions) and see the State Machine that the Cloud Pod injected. Similarly, you can navigate to the [DynamoDB](https://app.localstack.cloud/resources/dynamodb) to see the `LoanBrokerBanksTable` table, alongside [Lambda functions](https://app.localstack.cloud/resources/lambda), [SNS topic](https://app.localstack.cloud/resources/sns), [SQS queue](https://app.localstack.cloud/resources/sqs), and more that the Cloud Pod injected.
+
+## Contributing
+
+We appreciate your interest in contributing to our project and are always looking for new ways to improve the developer experience. We welcome feedback, bug reports, and even feature ideas from the community.
+Please refer to the [contributing file](CONTRIBUTING.md) for more details on how to get started. 
