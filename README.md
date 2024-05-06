@@ -18,7 +18,7 @@ The Loan Broker application with AWS Step Functions, DynamoDB, Lambda, SQS, and 
 - Loan Broker routes the application to multiple banks, and the banks reply if they are willing to offer.
 - Loan Broker aggregates all the result(s) and returns the result(s) to the user.
 
-Users can deploy this application on LocalStack and AWS with no changes using Cloud Development Kit (CDK). To test this application sample, we will demonstrate how you use LocalStack to deploy the infrastructure on your developer machine and your CI environment. Furthermore, we will showcase how you can use Cloud Pods Launchpad to inject a Cloud Pod into your running LocalStack container to test the application without creating your infrastructure again!
+Users can deploy this application on LocalStack and AWS with no changes using Cloud Development Kit (CDK). To test this application sample, we will demonstrate how you use LocalStack to deploy the infrastructure on your developer machine and your CI environment.
 
 ## Architecture diagram
 
@@ -159,22 +159,6 @@ Replace the `<EXECUTION_ARN>` with the `executionArn` output from the previous s
 This application sample hosts an example GitHub Action workflow that starts up LocalStack, builds the Lambda functions, and deploys the infrastructure on the runner. You can find the workflow in the `.github/workflows/main.yml` file. To run the workflow, you can fork this repository and push a commit to the `main` branch.
 
 Users can adapt this example workflow to run in their own CI environment. LocalStack supports various CI environments, including GitHub Actions, CircleCI, Jenkins, Travis CI, and more. You can find more information about the CI integration in the [LocalStack documentation](https://docs.localstack.cloud/user-guide/ci/).
-
-## Cloud Pods
-
-[Cloud Pods](https://docs.localstack.cloud/user-guide/tools/cloud-pods/) are a mechanism that allows you to take a snapshot of the state in your current LocalStack instance, persist it to a storage backend, and easily share it with your team members.
-
-You can convert your current AWS infrastructure state to a Cloud Pod using the `localstack` CLI. Check out our [Getting Started guide](https://docs.localstack.cloud/user-guide/tools/cloud-pods/getting-started/) and [LocalStack Cloud Pods CLI reference](https://docs.localstack.cloud/user-guide/tools/cloud-pods/pods-cli/) to learn more about Cloud Pods and how to use them.
-
-To inject a Cloud Pod that contains the infrastructure for this application, you can run the following command:
-
-```sh
-localstack pod load file://$(pwd)/cloud-pod/loan-broker-application
-```
-
-Alternatively, you can use [Cloud Pods Launchpad](https://docs.localstack.cloud/user-guide/tools/cloud-pods/launchpad/) to quickly inject Cloud Pods into your running LocalStack container. Click on the [badge] to launch Cloud Pods Launchpad and inject the Cloud Pod for this application by clicking the `Inject` button.
-
-You can use the [LocalStack Web Application](https://app.localstack.cloud) to view the [Step Functions Resource Browser](https://app.localstack.cloud/resources/stepfunctions) and see the State Machine that the Cloud Pod injected. Similarly, you can navigate to the [DynamoDB](https://app.localstack.cloud/resources/dynamodb) to see the `LoanBrokerBanksTable` table, alongside [Lambda functions](https://app.localstack.cloud/resources/lambda), [SNS topic](https://app.localstack.cloud/resources/sns), [SQS queue](https://app.localstack.cloud/resources/sqs), and more that the Cloud Pod injected.
 
 ## Contributing
 
