@@ -1,0 +1,48 @@
+name: Deploy using Cloud Pods
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  cloud-pods-test:
+    name: Setup infrastructure using Cloud Pods
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Start LocalStack
+        uses: LocalStack/setup-localstack@main
+        with:
+          image-tag: 'latest'
+          use-pro: 'true'
+        env:
+          LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
+
+      - name: Load the Cloud Pod 
+        uses: LocalStack/setup-localstack/cloud-pods@main
+        with:
+          name: loan-broker-infra
+          action: load
+        env:
+          LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
+
+      - name: Run integration tests 
+        run: |
+          pip3 install boto3 pytest
+          pytest
+        env:
+          AWS_DEFAULT_REGION: us-east-1
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
