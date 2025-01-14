@@ -25,7 +25,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install CDK
         run: |
@@ -51,6 +51,11 @@ jobs:
           echo "Startup complete"
 
       - name: Deploy using CDK
+        env:
+          AWS_DEFAULT_REGION: us-east-1
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
         run: |
           cdklocal bootstrap aws://000000000000/us-east-1
           cdklocal deploy --all --require-approval never
