@@ -27,7 +27,7 @@ jobs:
           image-tag: 'latest'
           use-pro: 'true'
         env:
-          LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
 
       - name: Load the Cloud Pod 
         uses: LocalStack/setup-localstack/cloud-pods@main
@@ -35,7 +35,7 @@ jobs:
           name: loan-broker-infra
           action: load
         env:
-          LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
 
       - name: Run integration tests 
         run: |
