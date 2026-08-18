@@ -29,8 +29,8 @@ jobs:
 
       - name: Install CDK
         run: |
-          npm install -g aws-cdk-local aws-cdk
-          cdklocal --version
+          npm install -g @localstack/lstk aws-cdk
+          cdk --version
 
       - name: Install dependencies
         run: |
@@ -39,16 +39,14 @@ jobs:
       - name: Start LocalStack
         env:
           LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
-          DNS_ADDRESS: 0
+          LOCALSTACK_DNS_ADDRESS: 0
         run: |
-          pip install localstack awscli-local[ver1]
-          pip install terraform-local
           docker pull localstack/localstack:latest
           # Start LocalStack in the background
-          LS_LOG=trace localstack start -d
+          LOCALSTACK_LS_LOG=trace lstk start --non-interactive
           # Wait 30 seconds for the LocalStack container to become ready before timing out
           echo "Waiting for LocalStack startup..."
-          localstack wait -t 15
+          lstk status
           echo "Startup complete"
 
       - name: Deploy using CDK
@@ -58,15 +56,16 @@ jobs:
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
         run: |
-          cdklocal bootstrap aws://000000000000/us-east-1
-          cdklocal deploy --all --require-approval never
+          lstk cdk bootstrap aws://000000000000/us-east-1
+          lstk cdk deploy --all --require-approval never
 
       - name: List the resources
         run: |
-          awslocal lambda list-functions
-          awslocal sqs list-queues 
-          awslocal dynamodb list-tables
-          awslocal stepfunctions list-state-machines
+          lstk setup aws --non-interactive --force
+          lstk aws lambda list-functions
+          lstk aws sqs list-queues
+          lstk aws dynamodb list-tables
+          lstk aws stepfunctions list-state-machines
 
       - name: Send a Slack notification
         if: failure() || github.event_name != 'pull_request'
