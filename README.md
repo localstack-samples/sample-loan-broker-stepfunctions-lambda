@@ -34,10 +34,10 @@ The following diagram shows the architecture that this sample application builds
 
 ## Prerequisites
 
-- A valid [LocalStack for AWS license](https://localstack.cloud/pricing). Your license provides a [`LOCALSTACK_AUTH_TOKEN`](https://docs.localstack.cloud/getting-started/auth-token/) to activate LocalStack.
-- [`localstack` CLI](https://docs.localstack.cloud/getting-started/installation/#localstack-cli).
-- [Cloud Development Kit](https://docs.localstack.cloud/user-guide/integrations/aws-cdk/) with the [`cdklocal`](https://www.npmjs.com/package/aws-cdk-local) installed.
-- [AWS CLI](https://docs.localstack.cloud/user-guide/integrations/aws-cli/) with the [`awslocal` wrapper](https://docs.localstack.cloud/user-guide/integrations/aws-cli/#localstack-aws-cli-awslocal).
+- A valid [LocalStack for AWS license](https://localstack.cloud/pricing). Your license provides a [`LOCALSTACK_AUTH_TOKEN`](https://docs.localstack.cloud/aws/getting-started/auth-token/) to activate LocalStack.
+- [`lstk` CLI](https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/).
+- [Cloud Development Kit](https://docs.localstack.cloud/user-guide/integrations/aws-cdk/).
+- [AWS CLI](https://docs.localstack.cloud/user-guide/integrations/aws-cli/), required by `lstk aws`.
 - [Node.js](https://nodejs.org/en/download), and [`yarn`](https://yarnpkg.com/).
 
 ## Start LocalStack
@@ -50,7 +50,7 @@ make start
 make ready
 ```
 
-We specified DEBUG=1 to get the printed LocalStack logs directly in the terminal to help us see the event-driven architecture in action. If you prefer running LocalStack in detached mode, you can add the `-d` flag to the `localstack start` command, and use Docker Desktop to view the logs.
+We specified DEBUG=1 to get the printed LocalStack logs directly in the terminal to help us see the event-driven architecture in action. If you prefer running LocalStack in detached mode, you can add the `--non-interactive` flag to the `lstk start` command, and use Docker Desktop to view the logs.
 
 ## Instructions
 
@@ -58,7 +58,7 @@ You can build and deploy the sample application on LocalStack by running our `Ma
 
 ### Deploying the application
 
-To create the AWS infrastructure locally, you can use CDK and our `cdklocal` wrapper. Before you can deploy the infrastructure, you need to install the application dependencies:
+To create the AWS infrastructure locally, you can use CDK with `lstk cdk`. Before you can deploy the infrastructure, you need to install the application dependencies:
 
 ```sh
 yarn
@@ -67,8 +67,8 @@ yarn
 To deploy the infrastructure, you can run the following command:
 
 ```sh
-cdklocal bootstrap
-cdklocal deploy --all
+lstk cdk bootstrap
+lstk cdk deploy --all
 ```
 
 This will deploy the `LoanBroker-RecipientList-Stack` and `LoanBroker-PubSub-Stack` stacks. You will see the following output:
@@ -87,7 +87,7 @@ Take a note of the `LoanBroker-RecipientList-Stack.LoanBrokerArn` output. You wi
 Before you can test the application, you need to pre-populate the `LoanBrokerBanksTable` for the `RecipientsList` stack:
 
 ```sh
-awslocal dynamodb put-item \
+lstk aws dynamodb put-item \
     --table-name=LoanBrokerBanksTable \
     --item='{ "Type": { "S": "Home" }, "BankAddress": {"L": [ { "S": "BankRecipientPremium" }, { "S": "BankRecipientUniversal" }, { "S": "BankRecipientPawnshop" } ] } }'
 ```
@@ -95,7 +95,7 @@ awslocal dynamodb put-item \
 We can start the State Machine execution to get quotes from the banks after submitting a loan application. Run the following command:
 
 ```sh
-awslocal stepfunctions start-execution \
+lstk aws stepfunctions start-execution \
     --name=cli-test-run \
     --state-machine-arn=<STATE_MACHINE_ARN> \
     --input="{\"SSN\": \"123-45-6789\", \"Amount\": 500000, \"Term\": 30 }"
@@ -113,7 +113,7 @@ Replace `<STATE_MACHINE_ARN>` with the `LoanBroker-RecipientList-Stack.LoanBroke
 You can use the Execution ARN to see the output of the State Machine execution:
 
 ```sh
-awslocal stepfunctions describe-execution \
+lstk aws stepfunctions describe-execution \
     --execution-arn=<EXECUTION_ARN> \
     --query="output" | jq -r  '. | fromjson'
 ```
