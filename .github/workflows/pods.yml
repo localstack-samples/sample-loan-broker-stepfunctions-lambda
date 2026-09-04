@@ -27,7 +27,7 @@ jobs:
       - name: Start LocalStack
         env:
           LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
-        run: lstk start --non-interactive
+        run: lstk start
 
       - name: Load the Cloud Pod
         env:
