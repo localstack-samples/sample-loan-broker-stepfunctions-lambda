@@ -11,6 +11,7 @@ const loanBrokerRecipientListStack = new LoanBrokerRecipientListStack(app, "Loan
 });
 cdk.Tags.of(loanBrokerRecipientListStack).add("Project", "AWS CDK Loan Broker");
 cdk.Tags.of(loanBrokerRecipientListStack).add("Stackname", "LoanBroker-RecipientList-Stack");
+cdk.Tags.of(loanBrokerRecipientListStack).add("aws-apn-id", "pc:9yq38ki5jw5mas7jhjthpgveo");
 
 
 const loanBrokerPubSubStack = new LoanBrokerPubSubStack(app, "LoanBroker-PubSub-Stack", {
@@ -18,3 +19,4 @@ const loanBrokerPubSubStack = new LoanBrokerPubSubStack(app, "LoanBroker-PubSub-
 });
 cdk.Tags.of(loanBrokerPubSubStack).add("Project", "AWS CDK Loan Broker");
 cdk.Tags.of(loanBrokerPubSubStack).add("Stackname", "LoanBroker-PubSub-Stack");
+cdk.Tags.of(loanBrokerPubSubStack).add("aws-apn-id", "pc:9yq38ki5jw5mas7jhjthpgveo");
